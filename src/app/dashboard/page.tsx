@@ -9,10 +9,6 @@ const PLACEHOLDER_CARDS = [
     empty: "첨삭 결과를 import하면 여기에 점수 추이가 표시됩니다.",
   },
   {
-    title: "오늘의 복습",
-    empty: "복습 노트가 준비되면 오늘 복습할 카드 수가 표시됩니다.",
-  },
-  {
     title: "Banque d'idées",
     empty: "아이디어 뱅크가 준비되면 주제별 아이디어 수가 표시됩니다.",
   },
@@ -34,6 +30,12 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(3)
     .returns<Writing[]>();
+
+  const today = new Date().toISOString().slice(0, 10);
+  const { count: dueCount } = await supabase
+    .from("vocab")
+    .select("*", { count: "exact", head: true })
+    .lte("srs_due", today);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
@@ -101,6 +103,22 @@ export default async function DashboardPage() {
             className="mt-3 inline-block text-sm text-ink-500 hover:underline"
           >
             히스토리 전체 보기 →
+          </Link>
+        </section>
+
+        <section className="rounded-2xl border border-ink-200 bg-ink-50 p-5">
+          <h2 className="font-display text-base font-semibold text-ink-900">
+            오늘의 복습
+          </h2>
+          <p className="mt-2 text-3xl font-semibold text-plum-600">
+            {dueCount ?? 0}
+            <span className="ml-1 text-sm font-normal text-ink-500">개</span>
+          </p>
+          <Link
+            href="/review"
+            className="mt-3 inline-block text-sm font-medium text-plum-600 hover:underline"
+          >
+            복습 시작 →
           </Link>
         </section>
 
