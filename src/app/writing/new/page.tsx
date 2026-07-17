@@ -1,0 +1,26 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { WritingForm } from "../writing-form";
+
+export default async function NewWritingPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  return (
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
+      <header>
+        <p className="font-display text-sm font-medium uppercase tracking-[0.2em] text-plum-500">
+          라이팅 스튜디오
+        </p>
+        <h1 className="font-display mt-1 text-2xl font-semibold text-ink-900">
+          새 작문
+        </h1>
+      </header>
+
+      <WritingForm variant="create" />
+    </main>
+  );
+}
