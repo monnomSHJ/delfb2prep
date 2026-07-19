@@ -2,7 +2,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VocabForm } from "../vocab-form";
 
-export default async function NewVocabPage() {
+export default async function NewVocabPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ term?: string; meaning?: string; example?: string }>;
+}) {
+  const { term, meaning, example } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,7 +25,12 @@ export default async function NewVocabPage() {
         </h1>
       </header>
 
-      <VocabForm variant="create" />
+      <VocabForm
+        variant="create"
+        initial={
+          term || meaning || example ? { term, meaning, example } : undefined
+        }
+      />
     </main>
   );
 }

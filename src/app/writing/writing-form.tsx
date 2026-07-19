@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { createWriting, updateDraft } from "./actions";
 import { countWords } from "@/lib/writing/wordCount";
 import type { WritingMode } from "@/lib/writing/types";
 
 type WritingFormProps =
-  | { variant: "create" }
+  | { variant: "create"; initial?: { prompt?: string } }
   | {
       variant: "edit";
       id: string;
@@ -19,11 +20,14 @@ const MODES: { value: WritingMode; label: string }[] = [
 ];
 
 export function WritingForm(props: WritingFormProps) {
-  const initial = props.variant === "edit" ? props.initial : undefined;
-  const [mode, setMode] = useState<WritingMode>(initial?.mode ?? "écrit");
-  const [prompt, setPrompt] = useState(initial?.prompt ?? "");
-  const [outline, setOutline] = useState(initial?.outline ?? "");
-  const [body, setBody] = useState(initial?.body ?? "");
+  const editInitial = props.variant === "edit" ? props.initial : undefined;
+  const createInitial = props.variant === "create" ? props.initial : undefined;
+  const [mode, setMode] = useState<WritingMode>(editInitial?.mode ?? "écrit");
+  const [prompt, setPrompt] = useState(
+    editInitial?.prompt ?? createInitial?.prompt ?? "",
+  );
+  const [outline, setOutline] = useState(editInitial?.outline ?? "");
+  const [body, setBody] = useState(editInitial?.body ?? "");
   const [isPending, startTransition] = useTransition();
   const [savedAt, setSavedAt] = useState<number | null>(null);
 
@@ -73,7 +77,17 @@ export function WritingForm(props: WritingFormProps) {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-ink-700">개요</span>
+        <div className="flex items-baseline justify-between">
+          <span className="text-sm font-medium text-ink-700">개요</span>
+          {outline.trim() && (
+            <Link
+              href={`/ideas/new?content=${encodeURIComponent(outline)}`}
+              className="text-xs font-medium text-plum-600 hover:underline"
+            >
+              아이디어 뱅크로 보내기 →
+            </Link>
+          )}
+        </div>
         <textarea
           value={outline}
           onChange={(e) => setOutline(e.target.value)}

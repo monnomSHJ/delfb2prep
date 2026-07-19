@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { importFeedback } from "../actions";
 import { buildGradingPrompt } from "@/lib/writing/gradingPrompt";
@@ -188,9 +189,22 @@ export function GradingPanel({
                   <p className="font-medium text-ink-900">더 B2다운 표현</p>
                   <ul className="mt-2 flex flex-col gap-2">
                     {feedback.better_expressions.map((e, i) => (
-                      <li key={i} className="rounded-lg bg-white p-3">
-                        <span className="text-ink-500">{e.instead_of}</span> →{" "}
-                        <span className="text-plum-700">{e.use}</span>
+                      <li
+                        key={i}
+                        className="flex items-center justify-between gap-3 rounded-lg bg-white p-3"
+                      >
+                        <span>
+                          <span className="text-ink-500">{e.instead_of}</span>{" "}
+                          → <span className="text-plum-700">{e.use}</span>
+                        </span>
+                        <Link
+                          href={`/vocab/new?term=${encodeURIComponent(
+                            e.use,
+                          )}&meaning=${encodeURIComponent(`"${e.instead_of}" 대신 사용`)}`}
+                          className="shrink-0 rounded-lg border border-plum-500 px-2.5 py-1 text-xs font-medium text-plum-600 transition hover:bg-plum-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600"
+                        >
+                          복습 노트로 보내기
+                        </Link>
                       </li>
                     ))}
                   </ul>

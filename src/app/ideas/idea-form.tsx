@@ -1,17 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createCard, deleteCard, updateCard } from "./actions";
-import type { VocabType } from "@/lib/vocab/types";
+import { createIdea, deleteIdea, updateIdea } from "./actions";
 
-type VocabFormProps =
+type IdeaFormProps =
   | {
       variant: "create";
       initial?: {
-        type?: VocabType;
-        term?: string;
-        meaning?: string;
-        example?: string;
+        topic?: string;
+        content?: string;
+        source?: string;
         tags?: string[];
       };
     }
@@ -19,26 +17,18 @@ type VocabFormProps =
       variant: "edit";
       id: string;
       initial: {
-        type: VocabType;
-        term: string;
-        meaning: string;
-        example: string;
+        topic: string;
+        content: string;
+        source: string;
         tags: string[];
       };
     };
 
-const TYPES: { value: VocabType; label: string }[] = [
-  { value: "word", label: "어휘" },
-  { value: "expression", label: "표현" },
-  { value: "structure", label: "문장 구조" },
-];
-
-export function VocabForm(props: VocabFormProps) {
+export function IdeaForm(props: IdeaFormProps) {
   const initial = props.initial;
-  const [type, setType] = useState<VocabType>(initial?.type ?? "word");
-  const [term, setTerm] = useState(initial?.term ?? "");
-  const [meaning, setMeaning] = useState(initial?.meaning ?? "");
-  const [example, setExample] = useState(initial?.example ?? "");
+  const [topic, setTopic] = useState(initial?.topic ?? "");
+  const [content, setContent] = useState(initial?.content ?? "");
+  const [source, setSource] = useState(initial?.source ?? "");
   const [tagsText, setTagsText] = useState(initial?.tags?.join(", ") ?? "");
   const [isPending, startTransition] = useTransition();
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -51,12 +41,12 @@ export function VocabForm(props: VocabFormProps) {
   }
 
   function handleSave() {
-    const data = { type, term, meaning, example, tags: parsedTags() };
+    const data = { topic, content, source, tags: parsedTags() };
     startTransition(async () => {
       if (props.variant === "create") {
-        await createCard(data);
+        await createIdea(data);
       } else {
-        await updateCard(props.id, data);
+        await updateIdea(props.id, data);
         setSavedAt(Date.now());
       }
     });
@@ -64,61 +54,43 @@ export function VocabForm(props: VocabFormProps) {
 
   function handleDelete() {
     if (props.variant !== "edit") return;
-    if (!confirm("이 카드를 삭제할까요?")) return;
+    if (!confirm("이 아이디어를 삭제할까요?")) return;
     startTransition(async () => {
-      await deleteCard(props.id);
+      await deleteIdea(props.id);
     });
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <fieldset className="flex gap-2">
-        <legend className="sr-only">항목 유형</legend>
-        {TYPES.map((t) => (
-          <button
-            key={t.value}
-            type="button"
-            onClick={() => setType(t.value)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plum-600 ${
-              type === t.value
-                ? "bg-plum-600 text-white"
-                : "border border-ink-200 text-ink-700 hover:bg-ink-100"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </fieldset>
-
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-ink-700">용어</span>
+        <span className="text-sm font-medium text-ink-700">주제</span>
         <input
           type="text"
-          value={term}
-          onChange={(e) => setTerm(e.target.value)}
-          placeholder="예: néanmoins"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="예: environnement, technologie"
           className="rounded-xl border border-ink-200 bg-ink-50 px-4 py-3 text-base text-ink-900 outline-none transition focus:border-plum-500 focus:ring-2 focus:ring-plum-200"
         />
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-ink-700">의미</span>
+        <span className="text-sm font-medium text-ink-700">내용</span>
         <textarea
-          value={meaning}
-          onChange={(e) => setMeaning(e.target.value)}
-          rows={2}
-          placeholder="뜻 또는 한국어 설명"
-          className="rounded-xl border border-ink-200 bg-ink-50 px-4 py-3 text-base text-ink-900 outline-none transition focus:border-plum-500 focus:ring-2 focus:ring-plum-200"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={5}
+          placeholder="논거·예시·통계·표현을 자유롭게 적어두세요"
+          className="rounded-xl border border-ink-200 bg-ink-50 px-4 py-3 text-base leading-relaxed text-ink-900 outline-none transition focus:border-plum-500 focus:ring-2 focus:ring-plum-200"
         />
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-ink-700">예문</span>
-        <textarea
-          value={example}
-          onChange={(e) => setExample(e.target.value)}
-          rows={2}
-          placeholder="이 표현이 쓰인 예문"
+        <span className="text-sm font-medium text-ink-700">출처</span>
+        <input
+          type="text"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+          placeholder="예: Le Monde, 2026년 5월 기사"
           className="rounded-xl border border-ink-200 bg-ink-50 px-4 py-3 text-base text-ink-900 outline-none transition focus:border-plum-500 focus:ring-2 focus:ring-plum-200"
         />
       </label>
@@ -129,7 +101,7 @@ export function VocabForm(props: VocabFormProps) {
           type="text"
           value={tagsText}
           onChange={(e) => setTagsText(e.target.value)}
-          placeholder="예: connecteurs, B2"
+          placeholder="예: environnement, B2"
           className="rounded-xl border border-ink-200 bg-ink-50 px-4 py-3 text-base text-ink-900 outline-none transition focus:border-plum-500 focus:ring-2 focus:ring-plum-200"
         />
       </label>

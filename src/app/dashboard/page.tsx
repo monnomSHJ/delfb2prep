@@ -8,10 +8,6 @@ const PLACEHOLDER_CARDS = [
     title: "점수 추이",
     empty: "첨삭 결과를 import하면 여기에 점수 추이가 표시됩니다.",
   },
-  {
-    title: "Banque d'idées",
-    empty: "아이디어 뱅크가 준비되면 주제별 아이디어 수가 표시됩니다.",
-  },
 ];
 
 export default async function DashboardPage() {
@@ -36,6 +32,14 @@ export default async function DashboardPage() {
     .from("vocab")
     .select("*", { count: "exact", head: true })
     .lte("srs_due", today);
+
+  const { count: ideaCount } = await supabase
+    .from("ideas")
+    .select("*", { count: "exact", head: true });
+  const { data: ideaTopics } = await supabase.from("ideas").select("topic");
+  const ideaTopicCount = new Set(
+    (ideaTopics ?? []).map((i) => i.topic || "미분류"),
+  ).size;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
@@ -119,6 +123,23 @@ export default async function DashboardPage() {
             className="mt-3 inline-block text-sm font-medium text-plum-600 hover:underline"
           >
             복습 시작 →
+          </Link>
+        </section>
+
+        <section className="rounded-2xl border border-ink-200 bg-ink-50 p-5">
+          <h2 className="font-display text-base font-semibold text-ink-900">
+            Banque d&apos;idées
+          </h2>
+          <p className="mt-2 text-3xl font-semibold text-plum-600">
+            {ideaCount ?? 0}
+            <span className="ml-1 text-sm font-normal text-ink-500">개</span>
+          </p>
+          <p className="mt-1 text-xs text-ink-500">{ideaTopicCount}개 주제</p>
+          <Link
+            href="/ideas"
+            className="mt-3 inline-block text-sm font-medium text-plum-600 hover:underline"
+          >
+            아이디어 뱅크 →
           </Link>
         </section>
 
