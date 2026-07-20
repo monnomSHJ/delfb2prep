@@ -46,12 +46,21 @@ export default async function WritingDetailPage({
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
       <header className="flex items-center justify-between">
         <div>
-          <Link
-            href="/writing"
-            className="text-sm font-medium text-plum-600 hover:underline"
-          >
-            ← 히스토리
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard"
+              className="text-xs font-medium text-ink-500 hover:text-plum-600 hover:underline"
+            >
+              ← 대시보드
+            </Link>
+            <span className="text-xs text-ink-300">·</span>
+            <Link
+              href="/writing"
+              className="text-sm font-medium text-plum-600 hover:underline"
+            >
+              ← 히스토리
+            </Link>
+          </div>
           <h1 className="font-display mt-1 text-2xl font-semibold text-ink-900">
             {writing.prompt ? writing.prompt.slice(0, 40) : "제목 없는 작문"}
           </h1>

@@ -47,7 +47,13 @@ export default async function VocabListPage({
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
       <header className="flex items-center justify-between">
         <div>
-          <p className="font-display text-sm font-medium uppercase tracking-[0.2em] text-plum-500">
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium text-plum-600 hover:underline"
+          >
+            ← 대시보드
+          </Link>
+          <p className="font-display mt-2 text-sm font-medium uppercase tracking-[0.2em] text-plum-500">
             복습 노트
           </p>
           <h1 className="font-display mt-1 text-2xl font-semibold text-ink-900">

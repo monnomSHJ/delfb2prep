@@ -135,12 +135,20 @@ export default async function DashboardPage() {
             {dueCount ?? 0}
             <span className="ml-1 text-sm font-normal text-ink-500">개</span>
           </p>
-          <Link
-            href="/review"
-            className="mt-3 inline-block text-sm font-medium text-plum-600 hover:underline"
-          >
-            복습 시작 →
-          </Link>
+          <div className="mt-3 flex items-center gap-3">
+            <Link
+              href="/review"
+              className="text-sm font-medium text-plum-600 hover:underline"
+            >
+              복습 시작 →
+            </Link>
+            <Link
+              href="/vocab"
+              className="text-sm text-ink-500 hover:underline"
+            >
+              전체 목록 →
+            </Link>
+          </div>
         </section>
 
         <section className="rounded-2xl border border-ink-200 bg-ink-50 p-5">
