@@ -2,6 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Writing } from "@/lib/writing/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "라이팅 히스토리",
+};
 
 export default async function WritingHistoryPage({
   searchParams,

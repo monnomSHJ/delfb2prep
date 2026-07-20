@@ -3,6 +3,23 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VocabForm } from "../vocab-form";
 import type { VocabCard } from "@/lib/vocab/types";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: card } = await supabase
+    .from("vocab")
+    .select("term")
+    .eq("id", id)
+    .single<Pick<VocabCard, "term">>();
+
+  return { title: card?.term || "카드" };
+}
 
 export default async function VocabDetailPage({
   params,

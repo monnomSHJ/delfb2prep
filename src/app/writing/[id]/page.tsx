@@ -4,6 +4,23 @@ import { createClient } from "@/lib/supabase/server";
 import { WritingForm } from "../writing-form";
 import { GradingPanel } from "./grading-panel";
 import type { Writing } from "@/lib/writing/types";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: writing } = await supabase
+    .from("writings")
+    .select("prompt")
+    .eq("id", id)
+    .single<Pick<Writing, "prompt">>();
+
+  return { title: writing?.prompt ? writing.prompt.slice(0, 40) : "작문" };
+}
 
 export default async function WritingDetailPage({
   params,

@@ -3,6 +3,23 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { IdeaForm } from "../idea-form";
 import type { Idea } from "@/lib/ideas/types";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: idea } = await supabase
+    .from("ideas")
+    .select("topic")
+    .eq("id", id)
+    .single<Pick<Idea, "topic">>();
+
+  return { title: idea?.topic || "아이디어" };
+}
 
 export default async function IdeaDetailPage({
   params,

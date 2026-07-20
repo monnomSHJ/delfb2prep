@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
+import { ServiceWorkerRegister } from "./sw-register";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -13,8 +14,23 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DELF B2 · Atelier",
+  title: {
+    default: "DELF B2 · Atelier",
+    template: "%s · DELF B2 Atelier",
+  },
   description: "DELF B2 준비를 위한 쓰기 연습과 복습 노트",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Atelier B2",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f5f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1720" },
+  ],
 };
 
 export default function RootLayout({
@@ -27,7 +43,10 @@ export default function RootLayout({
       lang="ko"
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <ServiceWorkerRegister />
+      </body>
     </html>
   );
 }

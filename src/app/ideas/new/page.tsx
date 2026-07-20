@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { IdeaForm } from "../idea-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "새 아이디어",
+};
 
 export default async function NewIdeaPage({
   searchParams,

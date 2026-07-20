@@ -2,6 +2,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ReviewSession } from "./review-session";
 import type { VocabCard } from "@/lib/vocab/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "오늘의 복습",
+};
 
 export default async function ReviewPage() {
   const supabase = await createClient();

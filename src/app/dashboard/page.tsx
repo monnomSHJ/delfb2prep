@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ScoreTrendSparkline } from "./score-trend-sparkline";
 import type { Writing } from "@/lib/writing/types";
+import type { Metadata } from "next";
 
-const PLACEHOLDER_CARDS = [
-  {
-    title: "점수 추이",
-    empty: "첨삭 결과를 import하면 여기에 점수 추이가 표시됩니다.",
-  },
-];
+export const metadata: Metadata = {
+  title: "대시보드",
+};
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -40,6 +39,24 @@ export default async function DashboardPage() {
   const ideaTopicCount = new Set(
     (ideaTopics ?? []).map((i) => i.topic || "미분류"),
   ).size;
+
+  const { data: scoredWritings } = await supabase
+    .from("writings")
+    .select("score, created_at")
+    .not("score", "is", null)
+    .order("created_at", { ascending: true })
+    .limit(8)
+    .returns<Pick<Writing, "score" | "created_at">[]>();
+
+  const scoreTrend = (scoredWritings ?? [])
+    .filter((w): w is Pick<Writing, "score" | "created_at"> & { score: NonNullable<Writing["score"]> } =>
+      w.score !== null,
+    )
+    .map((w) => ({
+      label: `${w.score.total.points}/${w.score.total.max}`,
+      pct: Math.round((w.score.total.points / w.score.total.max) * 100),
+    }));
+  const latestScore = scoreTrend[scoreTrend.length - 1];
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
@@ -143,17 +160,27 @@ export default async function DashboardPage() {
           </Link>
         </section>
 
-        {PLACEHOLDER_CARDS.map((card) => (
-          <section
-            key={card.title}
-            className="rounded-2xl border border-ink-200 bg-ink-50 p-5"
-          >
-            <h2 className="font-display text-base font-semibold text-ink-900">
-              {card.title}
-            </h2>
-            <p className="mt-2 text-sm text-ink-500">{card.empty}</p>
-          </section>
-        ))}
+        <section className="rounded-2xl border border-ink-200 bg-ink-50 p-5">
+          <h2 className="font-display text-base font-semibold text-ink-900">
+            점수 추이
+          </h2>
+          {!latestScore ? (
+            <p className="mt-2 text-sm text-ink-500">
+              첨삭 결과를 import하면 여기에 점수 추이가 표시됩니다.
+            </p>
+          ) : (
+            <>
+              <p className="mt-2 text-3xl font-semibold text-plum-600">
+                {latestScore.label}
+                <span className="ml-1 text-sm font-normal text-ink-500">점</span>
+              </p>
+              <ScoreTrendSparkline points={scoreTrend} />
+              <p className="mt-1 text-xs text-ink-500">
+                최근 {scoreTrend.length}개 작문 기준
+              </p>
+            </>
+          )}
+        </section>
       </div>
     </main>
   );

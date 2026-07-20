@@ -2,6 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Idea } from "@/lib/ideas/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "아이디어 뱅크",
+};
 
 export default async function IdeasListPage({
   searchParams,

@@ -2,6 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { VocabCard, VocabType } from "@/lib/vocab/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "복습 노트",
+};
 
 const TYPE_LABELS: Record<VocabType, string> = {
   word: "어휘",

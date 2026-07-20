@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VocabForm } from "../vocab-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "새 카드",
+};
 
 export default async function NewVocabPage({
   searchParams,
